@@ -1,0 +1,80 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  h1, h2, h3, h4 {
+    font-weight: 700;
+  }
+}
+
+.msi {
+  font-family: "Material Symbols Rounded";
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: "liga";
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+.card {
+  background: #ffffff;
+  border-radius: 1.5rem;
+  box-shadow: 0 2px 12px rgba(3, 3, 13, 0.06);
+}
+
+.btn-primary {
+  background: #ff5f8a;
+  color: white;
+  border-radius: 1rem;
+  padding: 0.6rem 1.2rem;
+  font-weight: 700;
+  transition: transform 150ms ease, box-shadow 150ms ease;
+  cursor: pointer;
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(255, 95, 138, 0.35);
+}
+
+.btn-secondary {
+  background: #ffe436;
+  color: #03030d;
+  border-radius: 1rem;
+  padding: 0.6rem 1.2rem;
+  font-weight: 700;
+  transition: transform 150ms ease, box-shadow 150ms ease;
+  cursor: pointer;
+}
+.btn-secondary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(255, 228, 54, 0.4);
+}
+
+.btn-outline {
+  border: 2px solid #03030d;
+  border-radius: 1rem;
+  padding: 0.55rem 1.15rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 150ms ease;
+}
+.btn-outline:hover {
+  background: rgba(3, 3, 13, 0.06);
+}
