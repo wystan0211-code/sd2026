@@ -2,12 +2,6 @@
 
 依照需求討論產出的完整可運作網站架構：Next.js 14（App Router + TypeScript）+ Prisma + SQLite + Tailwind CSS。
 
-## 預設管理員帳號
-- 帳號：`hongweiyun`
-- 密碼：`sd2026`
-- 顯示名稱：洪維昀
-
-（帳號用英文 `hongweiyun` 是因為登入帳號欄位設計為系統帳號，登入後系統內部顯示的是中文全名「洪維昀」。若您想直接用中文當登入帳號，把 `prisma/seed.ts` 裡的 `username: "hongweiyun"` 改成您想要的字串即可，中文帳號技術上也可行。）
 
 ## 本機執行方式
 
