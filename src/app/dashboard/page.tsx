@@ -112,11 +112,20 @@ export default function ScoringPage() {
       alert(data.error ?? "操作失敗");
       return;
     }
-    const newPopups: Popup[] = data.popups.slice(0, 6).map((p: any, i: number) => ({
-      id: `${Date.now()}-${i}`,
-      name: p.name,
-      points: p.points,
-    }));
+
+    let newPopups: Popup[];
+    if (target.mode === "WHOLE_CLASS") {
+      newPopups = [{ id: `${Date.now()}`, name: "全班", points }];
+    } else if (target.mode === "GROUP") {
+      newPopups = [{ id: `${Date.now()}`, name: `${target.squadCode}組`, points }];
+    } else {
+      newPopups = data.popups.slice(0, 6).map((p: any, i: number) => ({
+        id: `${Date.now()}-${i}`,
+        name: p.name,
+        points: p.points,
+      }));
+    }
+
     setPopups((prev) => [...prev, ...newPopups]);
     setTimeout(() => {
       setPopups((prev) => prev.filter((p) => !newPopups.find((n) => n.id === p.id)));
@@ -201,7 +210,7 @@ export default function ScoringPage() {
 
       {view === "STUDENTS" && (
         <div className="card p-5">
-          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4 max-h-[32rem] overflow-y-auto p-1">
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4 max-h-[52.5rem] overflow-y-auto p-1">
             {/* ClassDojo 風格的「全班」卡片，放在第一位 */}
             <button
               onClick={handleClassCardClick}
@@ -254,7 +263,7 @@ export default function ScoringPage() {
             setSelectedIds([]);
           }}
           title={multiSelect ? "結束多選" : "開啟多選"}
-          className="fixed bottom-6 left-24 z-40 w-14 h-14 rounded-full bg-white shadow-lg flex items-center justify-center cursor-pointer border border-ink/10"
+          className="fixed bottom-6 right-6 z-40 w-14 h-14 rounded-full bg-white shadow-lg flex items-center justify-center cursor-pointer border border-ink/10"
         >
           <span className={"msi " + (multiSelect ? "text-primary" : "text-ink/60")}>
             select_check_box
@@ -266,7 +275,7 @@ export default function ScoringPage() {
       {view === "STUDENTS" && multiSelect && selectedIds.length > 0 && (
         <button
           onClick={openOverlayForSelection}
-          className="fixed bottom-6 left-44 z-40 h-14 px-5 rounded-full bg-primary text-white font-bold shadow-lg flex items-center gap-1 cursor-pointer"
+          className="fixed bottom-6 right-24 z-40 h-14 px-5 rounded-full bg-primary text-white font-bold shadow-lg flex items-center gap-1 cursor-pointer"
         >
           <span className="msi">star</span>
           套用積分（{selectedIds.length}）

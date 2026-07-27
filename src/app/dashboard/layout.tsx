@@ -30,6 +30,19 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     router.push("/login");
   }
 
+  const ROLE_LABELS: { key: string; label: string }[] = [
+    { key: "isAdmin", label: "管理員" },
+    { key: "isTeacher", label: "老師" },
+    { key: "isAssistant", label: "實驗助理" },
+    { key: "isCounselor", label: "隊輔" },
+    { key: "isOfficer", label: "值星官" },
+    { key: "isChiefOfficer", label: "總值星" },
+    { key: "isDeputyChiefOfficer", label: "副總值星" },
+  ];
+  const roleText = ROLE_LABELS.filter((r) => (session.roles as any)?.[r.key])
+    .map((r) => r.label)
+    .join("、");
+
   return (
     <div className="min-h-screen flex">
       <aside
@@ -55,10 +68,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               className="cursor-pointer"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logo/kexuebang.svg" alt="科學榜" className="h-10 w-auto" />
+              <img src="/logo/kexuebang.svg" alt="科學榜" className="h-[5.625rem] w-auto" />
             </button>
           )}
-          {!collapsed && <p className="text-sm text-ink/50 mt-2">{session.name}</p>}
+          {!collapsed && (
+            <p className="text-sm text-ink/50 mt-2">
+              {session.name}
+              {roleText && <>｜{roleText}</>}
+            </p>
+          )}
         </div>
 
         <nav className="flex-1 flex flex-col gap-1 w-full">
@@ -85,14 +103,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <div className={"flex flex-col gap-1 w-full " + (collapsed ? "items-center" : "")}>
           <Link
             href="/"
-            title="查看公開排行榜"
+            title="查看科學榜"
             className={
               "flex items-center gap-2 px-3 py-2 rounded-xl text-ink/50 hover:bg-ink/5 " +
               (collapsed ? "justify-center" : "")
             }
           >
             <span className="msi">density_medium</span>
-            {!collapsed && "查看公開排行榜"}
+            {!collapsed && "查看科學榜"}
           </Link>
           <button
             onClick={handleLogout}

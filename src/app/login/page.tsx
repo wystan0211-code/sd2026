@@ -33,7 +33,7 @@ export default function LoginPage() {
     <main className="min-h-screen flex items-center justify-center px-4">
       <div className="w-full max-w-sm">
         <form onSubmit={handleSubmit} className="card p-8">
-          <div className="flex justify-end pr-4 mb-6">
+          <div className="flex justify-center pl-8 mb-6">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/logo/kexuebang.svg" alt="科學榜" className="h-24 w-auto" />
           </div>

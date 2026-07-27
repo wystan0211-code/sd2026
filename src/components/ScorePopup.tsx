@@ -35,7 +35,7 @@ export default function ScorePopupStack({ popups }: { popups: Popup[] }) {
               </span>
             </>
           )}
-          {p.name} {p.points >= 0 ? "+" : ""}
+          {p.name}{p.points >= 0 ? "+" : ""}
           {p.points}分
         </div>
       ))}
