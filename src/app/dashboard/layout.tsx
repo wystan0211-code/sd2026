@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useSession } from "@/lib/useSession";
@@ -18,6 +18,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const pathname = usePathname();
   const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
+
+  // 手機（窄螢幕）預設用窄版圖示側欄，桌面預設展開；使用者仍可自行切換
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.innerWidth < 768) {
+      setCollapsed(true);
+    }
+  }, []);
 
   if (isLoading) return <div className="p-10 text-ink/40">載入中…</div>;
   if (!session?.authenticated) {

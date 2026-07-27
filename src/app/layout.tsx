@@ -1,9 +1,24 @@
 import "./globals.css";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 
 export const metadata: Metadata = {
-  title: "營隊計分平台",
+  title: "科學榜",
   description: "營隊即時計分與排行榜系統",
+  manifest: "/manifest.json",
+  icons: {
+    icon: [
+      { url: "/logo/icon.svg", type: "image/svg+xml" },
+      { url: "/logo/icon-32.png", sizes: "32x32", type: "image/png" },
+      { url: "/logo/icon-192.png", sizes: "192x192", type: "image/png" },
+    ],
+    apple: [{ url: "/logo/icon-180.png", sizes: "180x180", type: "image/png" }],
+  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#ff5f8a",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

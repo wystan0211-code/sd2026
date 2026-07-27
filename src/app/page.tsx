@@ -29,7 +29,7 @@ export default function PublicLeaderboardPage() {
       <header className="flex items-center justify-between px-6 md:px-10 py-5">
         <button
           onClick={() => mutate()}
-          className="h-[6.75rem] flex items-center cursor-pointer"
+          className="h-16 md:h-[6.75rem] flex items-center cursor-pointer"
           title="點一下立即重新整理"
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
