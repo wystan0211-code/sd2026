@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { getSession } from "@/lib/auth";
 
+export const dynamic = "force-dynamic"; 
 export async function GET() {
   const squads = await prisma.squad.findMany({ orderBy: { sortOrder: "asc" } });
   return NextResponse.json({ squads });
