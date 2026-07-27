@@ -1,0 +1,102 @@
+// ==========================================================
+// 營隊計分平台 - 資料庫架構
+// 預設使用 SQLite（本機/小型部署即可用），部署到正式環境時
+// 只需把 datasource 換成 postgresql 並填入 DATABASE_URL 即可，
+// 其餘 schema 完全不用改。
+// ==========================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ------------------------------------------------------------------
+// 帳號（後台使用者）：一個帳號可同時勾選多個身分（權限疊加）
+// ------------------------------------------------------------------
+model Account {
+  id        String   @id @default(cuid())
+  name      String // 顯示用姓名（例如 洪維昀）
+  username  String   @unique // 登入帳號
+  password  String // bcrypt 雜湊後密碼
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // 多重身分（勾選疊加），四種基礎身分 + 總值星視為值星官的加強版
+  isAdmin        Boolean @default(false) // 管理員
+  isTeacher      Boolean @default(false) // 老師
+  isAssistant    Boolean @default(false) // 實驗助理／隊輔
+  isOfficer      Boolean @default(false) // 值星官
+  isChiefOfficer Boolean @default(false) // 總值星
+
+  // 暫時停權（管理員可勾選停用某些權限，這裡先做整體停權開關，
+  // 之後可依需求擴充成逐項權限停用表）
+  suspended        Boolean @default(false)
+  suspendedNote    String? // 停權原因/說明
+
+  scoreLogs ScoreLog[] @relation("OperatorLogs")
+}
+
+// ------------------------------------------------------------------
+// 小隊：固定六個代號 A1 A2 A3 B4 B5 B6
+// ------------------------------------------------------------------
+model Squad {
+  id           String  @id @default(cuid())
+  code         String  @unique // A1 / A2 / A3 / B4 / B5 / B6
+  color        String // 代表色 hex，例如 #ffd429
+  iconKey      String // 對應前端角色圖示的 key（先用預留位置）
+  sortOrder    Int     @default(0)
+  students     Student[]
+}
+
+// ------------------------------------------------------------------
+// 學生
+// ------------------------------------------------------------------
+model Student {
+  id        String   @id @default(cuid())
+  name      String // 完整全名（後台顯示用）
+  squadId   String
+  squad     Squad    @relation(fields: [squadId], references: [id])
+  score     Int      @default(0) // 目前累積總分（由加扣分紀錄同步累加，加速排行榜查詢）
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  scoreLogs ScoreLog[]
+}
+
+// ------------------------------------------------------------------
+// 加扣分按鈕設定（全站共用一組，管理員新增/刪除/調整分數，
+// 所有身分即時同步套用同一套按鈕）
+// ------------------------------------------------------------------
+model ScoreButton {
+  id        String  @id @default(cuid())
+  label     String // 按鈕顯示文字，例如「認真投入」
+  points    Int // 正數＝加分按鈕、負數＝扣分按鈕
+  sortOrder Int     @default(0)
+}
+
+// ------------------------------------------------------------------
+// 加扣分紀錄
+// mode: INDIVIDUAL(個人勾選) / WHOLE_CLASS(全班) / GROUP(小組快速加分)
+// actingAs: 操作者本次選擇的執行身分（管理員多重身分時必選）
+// ------------------------------------------------------------------
+model ScoreLog {
+  id         String   @id @default(cuid())
+  studentId  String
+  student    Student  @relation(fields: [studentId], references: [id])
+  operatorId String
+  operator   Account  @relation("OperatorLogs", fields: [operatorId], references: [id])
+
+  actingAs String // "ADMIN" | "TEACHER" | "ASSISTANT" | "OFFICER" | "CHIEF_OFFICER"
+  points   Int // 這筆紀錄實際加/扣的分數（可正可負）
+  mode     String // "INDIVIDUAL" | "WHOLE_CLASS" | "GROUP" | "CUSTOM"
+  sourceLabel String? // 對應的按鈕文字或「自訂輸入」
+
+  isUndone  Boolean  @default(false) // 是否已被復原
+  isDeleted Boolean  @default(false) // 是否已被刪除（軟刪除，保留稽核軌跡）
+
+  createdAt DateTime @default(now())
+}
