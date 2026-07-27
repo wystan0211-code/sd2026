@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { maskName } from "@/lib/nameMask";
 
+export const dynamic = "force-dynamic";
 // 公開排行榜：不需登入，姓名自動遮蔽。
 // 前端用 SWR 每 2~3 秒輪詢一次，達到「即時同步」效果。
 export async function GET() {
