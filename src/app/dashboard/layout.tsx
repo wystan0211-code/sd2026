@@ -83,8 +83,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <img src="/logo/kexuebang.svg" alt="科學榜" className="h-[5.625rem] w-auto" />
               </button>
               <div className="h-[5.625rem] flex flex-col justify-center items-end text-right ml-2 min-w-0">
-                <p className="text-sm font-bold text-ink/70 truncate w-full">{session.name}｜</p>
-                <p className="text-xs text-ink/50 truncate w-full">{roleText}</p>
+                {/* 桌面：恢復成單行「姓名｜職位」 */}
+                <p className="hidden md:block text-sm font-bold text-ink/70 truncate w-full">
+                  {session.name}
+                  {roleText && <>｜{roleText}</>}
+                </p>
+                {/* 手機：兩行顯示，不使用｜分隔 */}
+                <p className="md:hidden text-sm font-bold text-ink/70 truncate w-full">
+                  {session.name}
+                </p>
+                <p className="md:hidden text-xs text-ink/50 truncate w-full">{roleText}</p>
               </div>
             </>
           )}

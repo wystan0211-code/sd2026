@@ -276,7 +276,7 @@ export default function ScoringPage() {
       {view === "STUDENTS" && (
         // flex-1：填滿標題列以下的剩餘空間；只有這一層內部會出現捲軸
         <div className="card p-5 mx-1 md:mx-3 flex-1 min-h-0 overflow-x-hidden flex flex-col">
-          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4 p-1 flex-1 overflow-y-auto">
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3 md:gap-4 p-1 flex-1 overflow-y-auto overflow-x-hidden">
             {/* ClassDojo 風格的「全班」卡片，放在第一位 */}
             <button
               onClick={handleClassCardClick}
@@ -298,7 +298,7 @@ export default function ScoringPage() {
                   {classTotal}
                 </span>
               </div>
-              <span className="font-bold text-sm text-center">全班</span>
+              <span className="font-bold text-xs sm:text-sm text-center whitespace-nowrap">全班</span>
             </button>
 
             {orderedStudents.map((s: any) => {
@@ -329,7 +329,7 @@ export default function ScoringPage() {
                       {s.score}
                     </span>
                   </div>
-                  <span className="font-bold text-sm text-center">{s.name}</span>
+                  <span className="font-bold text-xs sm:text-sm text-center whitespace-nowrap">{s.name}</span>
                 </button>
               );
             })}
