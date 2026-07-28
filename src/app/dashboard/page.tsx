@@ -275,7 +275,7 @@ export default function ScoringPage() {
 
       {view === "STUDENTS" && (
         // flex-1：填滿標題列以下的剩餘空間；只有這一層內部會出現捲軸
-        <div className="card p-5 mx-1 md:mx-3 flex-1 min-h-0 overflow-x-hidden flex flex-col">
+        <div className="card px-2 md:px-4 py-5 flex-1 min-h-0 overflow-x-hidden flex flex-col">
           <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3 md:gap-4 p-1 flex-1 overflow-y-auto overflow-x-hidden">
             {/* ClassDojo 風格的「全班」卡片，放在第一位 */}
             <button

@@ -61,13 +61,15 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <Link
-          href="/"
-          className="mt-4 w-full btn-outline flex items-center justify-center gap-1"
-        >
-          <span className="msi">arrow_back</span>
-          返回科學榜
-        </Link>
+        <div className="px-8 mt-4">
+          <Link
+            href="/"
+            className="w-full btn-outline flex items-center justify-center gap-1"
+          >
+            <span className="msi">arrow_back</span>
+            返回科學榜
+          </Link>
+        </div>
       </div>
     </main>
   );
