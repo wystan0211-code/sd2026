@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useSWR from "swr";
 import { useSession } from "@/lib/useSession";
 import RoleSelectModal from "@/components/RoleSelectModal";
@@ -9,6 +9,7 @@ import ScoreOverlay, { ScoreTarget } from "@/components/ScoreOverlay";
 import SquadAvatar from "@/components/SquadAvatar";
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
+const ORDER_STORAGE_KEY = "scoring_student_order_v1";
 
 type View = "STUDENTS" | "GROUP";
 
@@ -28,13 +29,65 @@ export default function ScoringPage() {
     sourceLabel?: string;
     target: ScoreTarget;
   }>(null);
+  // 管理員專屬的自訂排序：只存在這台瀏覽器（localStorage），
+  // 不會寫回資料庫，不影響排名、公開科學榜，也不會影響其他帳號畫面上的順序
+  const [customOrder, setCustomOrder] = useState<string[]>([]);
+  const [dragId, setDragId] = useState<string | null>(null);
 
+  const orderKey = session?.accountId ? `${ORDER_STORAGE_KEY}_${session.accountId}` : null;
   const students = studentsData?.students ?? [];
   const buttons = buttonsData?.buttons ?? [];
   const squads = squadsData?.squads ?? [];
   const actingRoles = session?.actingRoles ?? [];
   const isAdmin = !!session?.roles?.isAdmin;
   const classTotal = students.reduce((sum: number, s: any) => sum + s.score, 0);
+
+  useEffect(() => {
+    if (!orderKey) return;
+    try {
+      const saved = localStorage.getItem(orderKey);
+      if (saved) setCustomOrder(JSON.parse(saved));
+    } catch {
+      // 忽略讀取失敗（例如無痕模式禁用 localStorage）
+    }
+  }, [orderKey]);
+
+  function persistOrder(order: string[]) {
+    setCustomOrder(order);
+    if (!orderKey) return;
+    try {
+      localStorage.setItem(orderKey, JSON.stringify(order));
+    } catch {
+      // 忽略寫入失敗
+    }
+  }
+
+  function handleDrop(targetId: string) {
+    if (!isAdmin || !dragId || dragId === targetId) {
+      setDragId(null);
+      return;
+    }
+    const baseOrder =
+      customOrder.length > 0 ? customOrder : students.map((s: any) => s.id);
+    const withoutDragged = baseOrder.filter((id: string) => id !== dragId);
+    const targetIndex = withoutDragged.indexOf(targetId);
+    withoutDragged.splice(targetIndex, 0, dragId);
+    persistOrder(withoutDragged);
+    setDragId(null);
+  }
+
+  // 依自訂順序排列學生卡片；新加入、尚未被排過序的學生自動排在最後
+  const orderedStudents =
+    customOrder.length === 0
+      ? students
+      : [...students].sort((a: any, b: any) => {
+          const ia = customOrder.indexOf(a.id);
+          const ib = customOrder.indexOf(b.id);
+          if (ia === -1 && ib === -1) return 0;
+          if (ia === -1) return 1;
+          if (ib === -1) return -1;
+          return ia - ib;
+        });
 
   function toggleSelected(id: string) {
     setSelectedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
@@ -136,7 +189,7 @@ export default function ScoringPage() {
   }
 
   return (
-    <div className="relative min-h-[calc(100vh-4rem)]">
+    <div className="h-full flex flex-col">
       <ScorePopupStack popups={popups} />
       <ScoreOverlay
         target={overlayTarget}
@@ -162,7 +215,8 @@ export default function ScoringPage() {
         onClose={() => setPendingRoleAction(null)}
       />
 
-      <div className="flex items-center justify-between mb-6">
+      {/* 固定不隨內容捲動的標題與頁籤 */}
+      <div className="flex items-center justify-between mb-6 shrink-0">
         <h1 className="text-2xl font-black">計分操作</h1>
         <div className="flex gap-2">
           {(
@@ -186,7 +240,7 @@ export default function ScoringPage() {
       </div>
 
       {view === "GROUP" && (
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 px-1">
           {squads.map((sq: any) => {
             const total = students
               .filter((s: any) => s.squad.code === sq.code)
@@ -209,8 +263,9 @@ export default function ScoringPage() {
       )}
 
       {view === "STUDENTS" && (
-        <div className="card p-5">
-          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4 max-h-[52.5rem] overflow-y-auto p-1">
+        // flex-1：填滿標題列以下的剩餘空間；只有這一層內部會出現捲軸
+        <div className="card px-6 md:px-8 py-5 flex-1 min-h-0 overflow-x-hidden flex flex-col">
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4 p-1 flex-1 overflow-y-auto">
             {/* ClassDojo 風格的「全班」卡片，放在第一位 */}
             <button
               onClick={handleClassCardClick}
@@ -223,27 +278,43 @@ export default function ScoringPage() {
             >
               <div className="relative">
                 <SquadAvatar iconKey="class" color="#e5e5e5" size={64} noBorder />
-                <span className="absolute -top-1 -right-1 bg-emerald-600 text-white text-xs font-black rounded-full min-w-[22px] h-[22px] px-1 flex items-center justify-center">
+                <span
+                  className={
+                    "absolute -top-1 -right-1 text-white text-xs font-black rounded-full min-w-[22px] h-[22px] px-1 flex items-center justify-center " +
+                    (classTotal < 0 ? "bg-red-600" : "bg-emerald-600")
+                  }
+                >
                   {classTotal}
                 </span>
               </div>
               <span className="font-bold text-sm text-center">全班</span>
             </button>
 
-            {students.map((s: any) => {
+            {orderedStudents.map((s: any) => {
               const selected = multiSelect && selectedIds.includes(s.id);
               return (
                 <button
                   key={s.id}
                   onClick={() => handleStudentCardClick(s)}
+                  draggable={isAdmin}
+                  onDragStart={() => isAdmin && setDragId(s.id)}
+                  onDragOver={(e) => isAdmin && e.preventDefault()}
+                  onDrop={() => isAdmin && handleDrop(s.id)}
                   className={
                     "flex flex-col items-center gap-1 p-2 rounded-2xl transition " +
-                    (selected ? "bg-primary/10 ring-2 ring-primary" : "hover:bg-ink/5")
+                    (selected ? "bg-primary/10 ring-2 ring-primary" : "hover:bg-ink/5") +
+                    (isAdmin ? " cursor-grab active:cursor-grabbing" : "") +
+                    (dragId === s.id ? " opacity-40" : "")
                   }
                 >
                   <div className="relative">
                     <SquadAvatar iconKey={s.squad.iconKey} color={s.squad.color} size={64} />
-                    <span className="absolute -top-1 -right-1 bg-emerald-600 text-white text-xs font-black rounded-full min-w-[22px] h-[22px] px-1 flex items-center justify-center">
+                    <span
+                      className={
+                        "absolute -top-1 -right-1 text-white text-xs font-black rounded-full min-w-[22px] h-[22px] px-1 flex items-center justify-center " +
+                        (s.score < 0 ? "bg-red-600" : "bg-emerald-600")
+                      }
+                    >
                       {s.score}
                     </span>
                   </div>

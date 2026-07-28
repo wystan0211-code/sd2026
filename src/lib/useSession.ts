@@ -7,13 +7,16 @@ export type ActingRole = { key: string; label: string };
 
 export type MeResponse = {
   authenticated: boolean;
+  accountId?: string;
   name?: string;
   roles?: {
     isAdmin: boolean;
     isTeacher: boolean;
     isAssistant: boolean;
+    isCounselor: boolean;
     isOfficer: boolean;
     isChiefOfficer: boolean;
+    isDeputyChiefOfficer: boolean;
   };
   actingRoles?: ActingRole[];
 };

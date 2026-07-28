@@ -51,14 +51,18 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     .join("、");
 
   return (
-    <div className="min-h-screen flex">
+    <div className="h-screen overflow-hidden flex">
+      {/* 手機上一律用 fixed 定位：收合時是窄版圖示列，展開時延伸為全螢幕；
+          桌面（md 以上）則還原成一般並排的側欄，寬度在 w-20 / w-64 間切換 */}
       <aside
         className={
-          "shrink-0 bg-white border-r border-ink/5 p-4 flex flex-col transition-all duration-200 " +
-          (collapsed ? "w-20 items-center" : "w-64")
+          "fixed left-0 top-0 h-screen z-50 bg-white border-r border-ink/5 p-4 flex flex-col " +
+          "transition-all duration-300 ease-in-out overflow-hidden " +
+          "md:static md:z-auto " +
+          (collapsed ? "w-20 items-center md:items-center" : "w-full md:w-64 items-center md:items-stretch")
         }
       >
-        <div className={"mb-8 " + (collapsed ? "flex justify-center" : "")}>
+        <div className={"mb-8 shrink-0 " + (collapsed ? "flex justify-center" : "flex md:block justify-center")}>
           {collapsed ? (
             <button
               onClick={() => setCollapsed(false)}
@@ -79,14 +83,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </button>
           )}
           {!collapsed && (
-            <p className="text-sm text-ink/50 mt-2">
+            <p className="text-sm text-ink/50 mt-2 text-center md:text-left">
               {session.name}
               {roleText && <>｜{roleText}</>}
             </p>
           )}
         </div>
 
-        <nav className="flex-1 flex flex-col gap-1 w-full">
+        <nav className="flex-1 flex flex-col gap-1 w-full overflow-y-auto">
           {NAV.filter((item) => !item.adminOnly || session.roles?.isAdmin).map((item) => (
             <Link
               key={item.href}
@@ -107,7 +111,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           ))}
         </nav>
 
-        <div className={"flex flex-col gap-1 w-full " + (collapsed ? "items-center" : "")}>
+        <div className={"flex flex-col gap-1 w-full shrink-0 " + (collapsed ? "items-center" : "")}>
           <Link
             href="/"
             title="查看科學榜"
@@ -132,7 +136,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </button>
         </div>
       </aside>
-      <main className="flex-1 p-6 md:p-8">{children}</main>
+
+      {/* 手機上側欄用 fixed 定位不占版面空間，這裡用固定左邊界留出窄版圖示列的寬度 */}
+      <main className="flex-1 h-screen overflow-y-auto ml-20 md:ml-0 p-6 md:p-8">
+        {children}
+      </main>
     </div>
   );
 }

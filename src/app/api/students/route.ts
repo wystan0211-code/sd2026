@@ -10,7 +10,7 @@ export async function GET() {
   }
   const students = await prisma.student.findMany({
     include: { squad: true },
-    orderBy: { score: "desc" },
+    orderBy: { createdAt: "asc" },
   });
   return NextResponse.json({ students });
 }

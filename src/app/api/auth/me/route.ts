@@ -7,6 +7,7 @@ export async function GET() {
 
   return NextResponse.json({
     authenticated: true,
+    accountId: session.accountId,
     name: session.name,
     roles: {
       isAdmin: session.isAdmin,

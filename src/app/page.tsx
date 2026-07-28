@@ -26,7 +26,7 @@ export default function PublicLeaderboardPage() {
 
   return (
     <main className="min-h-screen">
-      <header className="flex items-center justify-between px-6 md:px-10 py-5">
+      <header className="sticky top-0 z-20 bg-bg flex items-center justify-between px-6 md:px-10 py-5 shadow-[0_4px_10px_-2px_rgba(3,3,13,0.12)]">
         <button
           onClick={() => mutate()}
           className="h-16 md:h-[6.75rem] flex items-center cursor-pointer"
@@ -35,21 +35,21 @@ export default function PublicLeaderboardPage() {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/logo/kexuebang.svg" alt="科學榜" className="h-full w-auto" />
         </button>
-        <Link href="/login" className="btn-outline flex items-center gap-1">
+        <Link href="/login" className="btn-outline flex items-center gap-1 shrink-0">
           <span className="msi">login</span>
           登入
         </Link>
       </header>
 
-      <section className="px-4 md:px-10 pb-16">
+      <section className="px-4 md:px-10 pb-16 pt-4">
         <div className="card overflow-hidden">
           {/* 標題列：名次｜頭像｜姓名（靠左） 組別｜積分（靠右） */}
           <div className="flex items-center px-5 py-3 text-sm font-bold text-ink/60 border-b border-ink/5">
-            <div className="w-14 text-center">名次</div>
-            <div className="w-14"></div>
-            <div className="flex-1">姓名</div>
-            <div className="w-20 text-right">組別</div>
-            <div className="w-24 text-right">積分</div>
+            <div className="w-10 md:w-14 text-center shrink-0">名次</div>
+            <div className="w-14 shrink-0"></div>
+            <div className="flex-1 min-w-0">姓名</div>
+            <div className="w-16 md:w-20 text-right shrink-0">組別</div>
+            <div className="w-20 md:w-24 text-right shrink-0">積分</div>
           </div>
 
           <ul>
@@ -65,20 +65,24 @@ export default function PublicLeaderboardPage() {
               >
                 <div
                   className={
-                    "w-14 text-center " +
-                    (row.rank <= 3 ? "text-3xl font-black" : "text-base font-bold text-ink/70")
+                    "w-10 md:w-14 text-center shrink-0 " +
+                    (row.rank <= 3
+                      ? "text-xl md:text-3xl font-black"
+                      : "text-sm md:text-base font-bold text-ink/70")
                   }
                 >
                   {row.rank}
                 </div>
-                <div className="w-14 flex justify-center">
+                <div className="w-14 shrink-0 flex justify-center">
                   <SquadAvatar iconKey={row.iconKey} color={row.squadColor} size={40} />
                 </div>
-                <div className="flex-1 font-bold">{row.displayName}</div>
-                <div className="w-20 text-right text-sm font-bold text-ink/60">
+                <div className="flex-1 min-w-0 font-bold whitespace-nowrap overflow-hidden text-ellipsis">
+                  {row.displayName}
+                </div>
+                <div className="w-16 md:w-20 text-right text-sm font-bold text-ink/60 shrink-0">
                   {row.squadCode}
                 </div>
-                <div className="w-24 text-right text-2xl font-black text-primary">
+                <div className="w-20 md:w-24 text-right text-lg md:text-2xl font-black text-primary shrink-0">
                   {row.score}
                 </div>
               </li>
