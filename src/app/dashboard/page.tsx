@@ -29,6 +29,10 @@ export default function ScoringPage() {
     sourceLabel?: string;
     target: ScoreTarget;
   }>(null);
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    if (typeof window !== "undefined") setIsMobile(window.innerWidth < 768);
+  }, []);
   // 管理員專屬的自訂排序：只存在這台瀏覽器（localStorage），
   // 不會寫回資料庫，不影響排名、公開科學榜，也不會影響其他帳號畫面上的順序
   const [customOrder, setCustomOrder] = useState<string[]>([]);
@@ -240,7 +244,7 @@ export default function ScoringPage() {
       </div>
 
       {view === "GROUP" && (
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 px-1">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4 px-1">
           {squads.map((sq: any) => {
             const total = students
               .filter((s: any) => s.squad.code === sq.code)
@@ -249,13 +253,20 @@ export default function ScoringPage() {
               <button
                 key={sq.code}
                 onClick={() => handleSquadCardClick(sq.code)}
-                className="card p-4 flex items-center gap-3 text-left hover:brightness-95 transition"
+                className="card p-3 md:p-4 flex items-center justify-between gap-3 text-left hover:brightness-95 transition"
               >
-                <SquadAvatar iconKey={sq.iconKey} color={sq.color} size={56} />
-                <div>
+                <div className="flex items-center gap-3">
+                  <SquadAvatar iconKey={sq.iconKey} color={sq.color} size={isMobile ? 45 : 56} />
                   <p className="font-black">{sq.code}</p>
-                  <p className="text-sm text-ink/50">積分 {total}</p>
                 </div>
+                <span
+                  className={
+                    "w-10 h-10 shrink-0 rounded-full text-white font-black text-sm flex items-center justify-center " +
+                    (total < 0 ? "bg-red-600" : "bg-emerald-600")
+                  }
+                >
+                  {total}
+                </span>
               </button>
             );
           })}
@@ -264,7 +275,7 @@ export default function ScoringPage() {
 
       {view === "STUDENTS" && (
         // flex-1：填滿標題列以下的剩餘空間；只有這一層內部會出現捲軸
-        <div className="card px-6 md:px-8 py-5 flex-1 min-h-0 overflow-x-hidden flex flex-col">
+        <div className="card p-5 mx-1 md:mx-3 flex-1 min-h-0 overflow-x-hidden flex flex-col">
           <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4 p-1 flex-1 overflow-y-auto">
             {/* ClassDojo 風格的「全班」卡片，放在第一位 */}
             <button

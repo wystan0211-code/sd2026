@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import useSWR from "swr";
 import Link from "next/link";
 import SquadAvatar from "@/components/SquadAvatar";
@@ -24,9 +25,24 @@ export default function PublicLeaderboardPage() {
 
   const rows = data?.leaderboard ?? [];
 
+  // 只有內容真的往上滑、跟標題列交疊時才顯示陰影，平常在頂端不顯示
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    function onScroll() {
+      setScrolled(window.scrollY > 4);
+    }
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   return (
     <main className="min-h-screen">
-      <header className="sticky top-0 z-20 bg-bg flex items-center justify-between px-6 md:px-10 py-5 shadow-[0_4px_10px_-2px_rgba(3,3,13,0.12)]">
+      <header
+        className={
+          "sticky top-0 z-20 bg-bg flex items-center justify-between px-6 md:px-10 py-5 transition-shadow duration-200 " +
+          (scrolled ? "shadow-[0_4px_10px_-2px_rgba(3,3,13,0.12)]" : "")
+        }
+      >
         <button
           onClick={() => mutate()}
           className="h-16 md:h-[6.75rem] flex items-center cursor-pointer"

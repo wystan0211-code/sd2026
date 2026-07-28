@@ -59,10 +59,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           "fixed left-0 top-0 h-screen z-50 bg-white border-r border-ink/5 p-4 flex flex-col " +
           "transition-all duration-300 ease-in-out overflow-hidden " +
           "md:static md:z-auto " +
-          (collapsed ? "w-20 items-center md:items-center" : "w-full md:w-64 items-center md:items-stretch")
+          (collapsed ? "w-20 items-center md:items-center" : "w-full md:w-72 items-center md:items-stretch")
         }
       >
-        <div className={"mb-8 shrink-0 " + (collapsed ? "flex justify-center" : "flex md:block justify-center")}>
+        <div className={"mb-8 shrink-0 " + (collapsed ? "flex justify-center" : "flex items-center justify-between")}>
           {collapsed ? (
             <button
               onClick={() => setCollapsed(false)}
@@ -73,20 +73,20 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <img src="/logo/icon.svg" alt="展開" className="w-10 h-10" />
             </button>
           ) : (
-            <button
-              onClick={() => setCollapsed(true)}
-              title="收合側欄"
-              className="cursor-pointer"
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logo/kexuebang.svg" alt="科學榜" className="h-[5.625rem] w-auto" />
-            </button>
-          )}
-          {!collapsed && (
-            <p className="text-sm text-ink/50 mt-2 text-center md:text-left">
-              {session.name}
-              {roleText && <>｜{roleText}</>}
-            </p>
+            <>
+              <button
+                onClick={() => setCollapsed(true)}
+                title="收合側欄"
+                className="cursor-pointer shrink-0"
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/logo/kexuebang.svg" alt="科學榜" className="h-[5.625rem] w-auto" />
+              </button>
+              <div className="h-[5.625rem] flex flex-col justify-center items-end text-right ml-2 min-w-0">
+                <p className="text-sm font-bold text-ink/70 truncate w-full">{session.name}｜</p>
+                <p className="text-xs text-ink/50 truncate w-full">{roleText}</p>
+              </div>
+            </>
           )}
         </div>
 
